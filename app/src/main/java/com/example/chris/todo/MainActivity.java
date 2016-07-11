@@ -29,11 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //default oncreate code
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //bottom right button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,20 +45,28 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        //trys to read in list of tasks from local storage
         try{
+            //opens reader stream
             BufferedReader in = new BufferedReader(new InputStreamReader(openFileInput("taskList.txt")));
             String text;
             StringBuffer buf = new StringBuffer();
+            //creates a long buffer containing all tasks, deliminated by //
             while((text = in.readLine()) != null)
             {
                 buf.append(text+"\n");
             }
+
+            //close in stream
             in.close();
             CheckBox chk;
             String read;
+            //tokenize string
             StringTokenizer st = new StringTokenizer(buf.toString(), "//");
             read="";
+
+            //creates untracked checkboxes with found tasks, skips last token because it will
+            //always be blank due to how it is deliminated
             if(st.hasMoreElements())
             {
                 read = st.nextElement()+"";
@@ -65,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             while(st.hasMoreElements())
             {
 
-
+                    //todo - track checkboxes
                     chk = new CheckBox(this);
                     chk.setText(read);
                     LinearLayout layout = (LinearLayout) findViewById(R.id.main);
@@ -76,50 +86,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-
-
-/*
-            String line;
-            BufferedReader in = new BufferedReader(new FileReader("taskList.txt"));
-            ArrayList<CheckBox> tasks = new ArrayList<CheckBox>();
-
-            char [] text  = new char[50];
-            File file = new File("taskList.txt");
-            FileReader in = new FileReader(file);
-            in.read(text);
-
-            String t = text.toString();
-            CheckBox chk;
-            chk = new CheckBox(this);
-            chk.setText(t);
-            LinearLayout layout = (LinearLayout) findViewById(R.id.main);
-            layout.addView(chk);
-
-/*
-            while((line = in.readLine()) != null) {
-                chk = new CheckBox(this);
-                chk.setText(line);
-                layout.addView(chk);
-                System.out.println(line);
-            }
-            */
         }
+        //on error create a single checkbox instructing the use to create their own
         catch (Exception e)
         {
             CheckBox chk;
             chk = new CheckBox(this);
-            chk.setText("Help!");
+            chk.setText("Create a task");
             LinearLayout layout = (LinearLayout) findViewById(R.id.main);
             layout.addView(chk);
         }
 
-/*
-        TextView textView = new TextView(this);
-        textView.setTextSize(40);
-        textView.setText("Help!");
-        LinearLayout layout = (LinearLayout) findViewById(R.id.main);
-        layout.addView(textView);
-*/
 
     }
 
@@ -144,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    //creates a new task, by opening the createNewItem activity
     public void create()
     {
         Intent newItem = new Intent(this, CreateNewItem.class);
@@ -151,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(newItem);
 
     }
+    //erases the tasklist file removing all saved tasks
     public void clear(View view)
     {
         try {
@@ -161,9 +140,9 @@ public class MainActivity extends AppCompatActivity {
         }
         catch(IOException ex)
         {
-
+            //unprotected catch (todo - add error handling)
 
         }
 
     }
-}
+}//end of file
