@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
             //opens reader stream
             BufferedReader in = new BufferedReader(new InputStreamReader(openFileInput("taskList.txt")));
             String text;
+            int count=0;
+
             StringBuffer buf = new StringBuffer();
             //creates a long buffer containing all tasks, deliminated by //
             while((text = in.readLine()) != null)
@@ -59,6 +62,15 @@ public class MainActivity extends AppCompatActivity {
 
             //close in stream
             in.close();
+
+            //re-use in stream for reading checkbox status file
+            in = new BufferedReader(new InputStreamReader(openFileInput("isChecked.txt")));
+            String isCheckedString;
+            isCheckedString = in.readLine();
+            in.close();
+
+            //set string to char array to access individual elements
+            char[] isChecked = isCheckedString.toCharArray();
             CheckBox chk;
             String read;
             //tokenize string
@@ -72,21 +84,33 @@ public class MainActivity extends AppCompatActivity {
                 read = st.nextElement()+"";
                 read = read.trim();
             }
+
+            ArrayList<CheckBox> chks = new ArrayList<>();
             while(st.hasMoreElements())
             {
 
-                    //todo - track checkboxes
-                    chk = new CheckBox(this);
-                    chk.setText(read);
-                    LinearLayout layout = (LinearLayout) findViewById(R.id.main);
-                    layout.addView(chk);
+                //create checkbox
+                chk = new CheckBox(this);
+                chk.setText(read);
 
+                //checkbox tracking
+                if(isChecked[count] == '1')
+                    chk.setChecked(true);
+                chk.setOnCheckedChangeListener(new customListener(count, this));
+
+                //add to screen
+                LinearLayout layout = (LinearLayout) findViewById(R.id.main);
+                layout.addView(chk);
+
+                //get next
                 read = st.nextElement()+"";
                 read = read.trim();
+                count++;
             }
 
 
         }
+
         //on error create a single checkbox instructing the use to create their own
         catch (Exception e)
         {
@@ -136,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream outputStream;
             outputStream = openFileOutput("taskList.txt", Context.MODE_PRIVATE);
             outputStream.close();
+            outputStream = openFileOutput("isChecked.txt", Context.MODE_PRIVATE);
+            outputStream.close();
             create();
         }
         catch(IOException ex)
@@ -145,4 +171,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 }//end of file

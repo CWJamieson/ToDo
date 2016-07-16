@@ -41,24 +41,32 @@ public class CreateNewItem extends AppCompatActivity {
     {
         //adds deliminator
         message = message+"//";
-        //tries to find current file
+        //tries to find current files
         try{
-            //opens an append stream
+            //opens an append streams
             FileOutputStream outputStream;
             outputStream = openFileOutput("taskList.txt", Context.MODE_APPEND);
             //writes task
             outputStream.write(message.getBytes());
             outputStream.close();
+            outputStream = openFileOutput("isChecked.txt", Context.MODE_APPEND);
+            message = "0";
+            outputStream.write(message.getBytes());
+            outputStream.close();
 
 
         }
-        //if current file doesn't exist, a new one is created
+        //if current files don't exist,  new ones are created
         catch (IOException e){
             //try to create a new file
             try {
-                //opens write stream
+                //opens write streams
                 FileOutputStream outputStream;
                 outputStream = openFileOutput("taskList.txt", Context.MODE_PRIVATE);
+                outputStream.write(message.getBytes());
+                outputStream.close();
+                outputStream = openFileOutput("isChecked.txt", Context.MODE_PRIVATE);
+                message = "0";
                 outputStream.write(message.getBytes());
                 outputStream.close();
             }
